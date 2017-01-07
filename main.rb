@@ -1,7 +1,8 @@
-require_relative 'player'
+require_relative 'game'
 
 def start
-	puts '--Игра Black Jack--'
+	puts '--Игра BlackJack--'
+	puts "--   \u2660 \u2663 \u2666 \u2665    --"
 	main_menu
 end
 
@@ -10,11 +11,50 @@ def main_menu
   main_menu_choice
 end
 
+def turn1
+  if Game.get.turn1 == false
+    turn1_menu
+  else
+    turn2_menu
+  end
+end
+
+def turn1_menu
+  turn1_menu_text
+  turn1_menu_choice
+end
+
+
+def turn2(bool)
+  Game.get.turn2(bool)
+  turn2_menu
+end
+
+def turn2_menu
+  turn2_menu_text
+  turn2_menu_choice
+end
+
+def reset
+  if Game.get.reset == true
+    turn1
+  else
+    end_game
+  end
+end
+
+def end_game
+  puts 'Конец игры!'
+  main_menu
+end
+
+
 def main_menu_text
   puts ''
   puts '--Главное меню--'
   puts '1. Начать новую игру.'
-  puts '2. Выйти из пограммы.'
+  puts '2. Правила'
+  puts '3. Выйти из пограммы.'
   print 'Введите номер пункта меню: '
 end
 
@@ -22,8 +62,11 @@ def main_menu_choice
   choice = gets.chomp.to_i
   case choice
   when 1
-    players
+    Game.new(ask_name)
+    turn1
   when 2
+    rules
+  when 3
     exit
   else
     wrong_menu_choice
@@ -31,113 +74,68 @@ def main_menu_choice
   end
 end
 
-def wrong_menu_choice
+def turn1_menu_text
   puts ''
-  puts 'Неправильный номер пункта меню!!!!!'
-end
-
-def players
-  Player.new("Dealer")
-  Player.new(ask_name)
-  game
-end
-
-def game
-  Player.new_game
-  init_show
-  first_turn
-  second_turn
-  show_results
-  #evaluate_results
-  #end_menu
-end
-
-def init_show
-  puts ''
-  puts "#{Player.get(0).name} счет: #{Player.get(0).bank_account}."
-  puts "#{Player.get(1).name} счет: #{Player.get(1).bank_account}."
-end
-
-def first_turn
-  first_deal
-  show_first_deal
-end
-
-def first_deal
-  Player.get(0).deal
-  Player.get(1).deal
-  Player.get(0).count
-  Player.get(1).count
-  Player.get(0).wager
-  Player.get(1).wager
-end
-
-def show_first_deal
-  puts ''
-  puts "В банке: #{Player.show_bank}$."
-  puts "#{Player.get(0).name}: карты: * *"
-  print "#{Player.get(1).name}: карты: "
-  Player.get(1).show_hand
-  puts ", очки: #{Player.get(1).points}."
-end
-
-def second_turn
-  second_turn_menu_text
-  second_turn_choice
-end
-
-def second_turn_menu_text
-  puts ''
-  puts '--Что дальше?--'
-  puts '1. Взять карту.'
-  puts '2. Пропустить ход.'
+  puts '1. Взять карту?'
+  puts '2. Остаться?'
   print 'Введите номер пункта меню: '
 end
 
-def second_turn_choice
+def turn1_menu_choice
   choice = gets.chomp.to_i
   case choice
   when 1
-    player_second_deal
+    turn2(true)
   when 2
-    dealer_turn
+    turn2(false)
   else
     wrong_menu_choice
-    second_turn
+    turn1_menu
   end
 end
 
-def player_second_deal
-  Player.get(1).deal_one
-  Player.get(1).count
-end
-
-def dealer_turn
-  puts 'ход дилера'
-end
-
-def show_results
+def turn2_menu_text
   puts ''
-  puts '--Результаты--'
-  print "#{Player.get(0).name}: карты: "
-  Player.get(0).show_hand
-  puts ", очки: #{Player.get(0).points}"
-  print "#{Player.get(1).name}: карты: "
-  Player.get(1).show_hand
-  puts ", очки: #{Player.get(1).points}."
+  puts '1. Продолжить игру?'
+  puts '2. Выйти в главное меню (Игра будет проиграна).'
+  print 'Введите номер пункта меню: '
 end
 
-def evaluate_results
-
-end
-
-def end_menu
-
+def turn2_menu_choice
+  choice = gets.chomp.to_i
+  case choice
+  when 1
+    reset
+  when 2
+    main_menu
+  else
+    wrong_menu_choice
+    turn2_menu
+  end
 end
 
 def ask_name
   print 'Введите имя игрока: '
   gets.chomp
+end
+
+def wrong_menu_choice
+  puts ''
+  puts 'Неправильный номер пункта меню!!!!!'
+end
+
+def rules
+  puts ''
+  puts 'Правила игры:'
+  puts 'Выигрывает набравший наибольшее количество очков, но не более 21.'
+  puts 'Расчет очков: карты с номерами - количество очков равно номеру.'
+  puts 'Валет, дама, король - по 10 очков.'
+  puts 'Туз - 11 или 1, в зависимости от суммы очков.'
+  puts 'В начале игры у игрока 100$ в банке. Ставка - 10$.'
+  puts ''
+  puts 'Для выхода - нажмите Ввод.'
+  gets.chomp
+  main_menu
 end
 
 start
