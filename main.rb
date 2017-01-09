@@ -12,10 +12,10 @@ def main_menu
 end
 
 def turn1
-  if Game.get.turn1 == false
-    turn1_menu
-  else
+  if Game.get.turn1
     turn2_menu
+  else
+    turn1_menu
   end
 end
 
@@ -36,7 +36,7 @@ def turn2_menu
 end
 
 def reset
-  if Game.get.reset == true
+  if Game.get.reset
     turn1
   else
     end_game
@@ -47,7 +47,6 @@ def end_game
   puts 'Конец игры!'
   main_menu
 end
-
 
 def main_menu_text
   puts ''

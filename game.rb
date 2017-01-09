@@ -30,8 +30,8 @@ class Game
     wager(player)
     count(dealer)
     count(player)
-    show1
-    if evaluate1 == true
+    show_turn1
+    if evaluate_turn1   #should return boolean
       stats
       true
     else
@@ -39,8 +39,8 @@ class Game
     end
   end 
 
-  def turn2(bool)
-    if bool == true
+  def turn2(player_take_card)  #player_take_card = boolean
+    if player_take_card
       player.take_card(card)
       puts "#{player.name} взял карту."
       count(player)
@@ -48,16 +48,16 @@ class Game
       puts "#{player.name} остался при своих."
     end
     
-    bool2 = dealer.think
-    if bool2 == true
+    dealer_take_card = dealer.think   #dealer_take_card = boolean
+    if dealer_take_card
       dealer.take_card(card)
       puts "#{dealer.name} взял карту."
       count(dealer)
     else
       puts "#{dealer.name} остался при своих."
     end
-    show2
-    evaluate2
+    show_turn2
+    evaluate_turn2
     stats
   end 
 
@@ -81,27 +81,25 @@ class Game
   attr_accessor :dealer
   attr_accessor :player
 
-  def show1
+  def show_turn1
     puts "В банке: #{bank}$."
     puts "#{dealer.name}: #{dealer.hand_show_backs}."
     puts "#{player.name}: #{player.hand_show}, #{player.points} очков."
   end
 
-  def evaluate1
-    if @dealer.points == MAX && @player.points != MAX
-      show2
+  def evaluate_turn1
+    if dealer.points == MAX && player.points != MAX
+      show_turn2
       puts "У #{dealer.name} 21 очко!!!"
-      winner(@dealer)
-      loser(@player)
+      winner_loser(dealer, player)
       true
-    elsif @player.points == MAX && @dealer.points != MAX
-      show2
+    elsif player.points == MAX && dealer.points != MAX
+      show_turn2
       puts "У #{player.name} 21 очко!!!"
-      winner(@player)
-      loser(@dealer)
+      winner_loser(player, dealer)
       true
-    elsif @dealer.points == MAX && @player.points == MAX
-      show2
+    elsif dealer.points == MAX && player.points == MAX
+      show_turn2
       puts "У #{player.name} и #{dealer.name} обоих - 21 очко!!!"
       tie
       true
@@ -110,31 +108,27 @@ class Game
     end
   end 
 
-  def show2
+  def show_turn2
     puts ""
     puts "#{dealer.name}: #{dealer.hand_show}, #{dealer.points} очков."
     puts "#{player.name}: #{player.hand_show}, #{player.points} очков."
   end
 
-  def evaluate2
-    if @dealer.points > MAX && @player.points <= MAX
-      puts "#{dealer.name} перебор!"
-      winner(@player)
-      loser(@dealer)
-    elsif @dealer.points <= MAX && @player.points > MAX
-      puts "#{player.name} перебор!"
-      winner(@dealer)
-      loser(@player)
-    elsif @dealer.points > MAX && @player.points > MAX
+  def evaluate_turn2
+    if dealer.points > MAX && player.points <= MAX
+      puts "У #{dealer.name} - перебор!"
+      winner_loser(player, dealer)
+    elsif dealer.points <= MAX && player.points > MAX
+      puts "У #{player.name} - перебор!"
+      winner_loser(dealer, player)
+    elsif dealer.points > MAX && @player.points > MAX
       tie_lost
-    elsif @dealer.points == @player.points
+    elsif dealer.points == player.points
       tie 
-    elsif @dealer.points > @player.points
-      winner(@dealer)
-      loser(@player)
+    elsif dealer.points > player.points
+      winner_loser(dealer, player)
     else
-      winner(@player)
-      loser(@dealer)
+      winner_loser(player, dealer)
     end
   end 
 
@@ -146,24 +140,21 @@ class Game
 
   def tie
     puts "Ничья!"
-    @dealer.won(bank / 2)
-    @player.won(bank / 2)
+    dealer.won(bank / 2)
+    player.won(bank / 2)
   end
 
   def tie_lost
     puts "Перебор у обоих игроков!"
-    @dealer.won(bank / 2)
-    @player.won(bank / 2)
+    dealer.won(bank / 2)
+    player.won(bank / 2)
   end
 
-  def winner(player)
+  def winner_loser(player, other_player)
     puts "#{player.name} выиграл!!!"
     player.won(bank)
-  end
-
-  def loser(player)
-    puts "#{player.name} проиграл."
-    player.lost
+    puts "#{other_player.name} проиграл."
+    other_player.lost
   end
 
   def card

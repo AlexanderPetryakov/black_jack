@@ -17,7 +17,7 @@ class Dealer < Player
       bool = true if card.points == 11 && self.points < 18
     end
 
-    if bool == true
+    if bool
       true
     elsif self.points < 15
       true
